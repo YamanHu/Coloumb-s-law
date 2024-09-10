@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coulomb's Law Simulation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+            overflow: hidden; /* No scrolling */
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            max-height: 600px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h1 {
+            color: #ff7f50;
+            text-align: center;
+        }
+
+        .formula {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .simulation {
+            position: relative;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .charge {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 1.5;
+            font-size: 16px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.5s ease; /* Smooth transitions */
+        }
+
+        .input-fields {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .charge-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .charge-box label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .slider-container {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .slider-container input[type="range"] {
+            width: 150px;
+        }
+
+        .radio-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #eee;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .radio-group input[type="radio"]:checked + label {
+            background-color: #ff7f50;
+            color: white;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ff7f50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff6347;
+        }
+
+        #result {
+            margin-top: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        /* Dedication Section */
+        .dedication {
+            margin-top: 20px;
+            text-align: center;
+            font-family: 'Georgia', serif; /* Elegant Font */
+            font-style: italic;
+            color: #444;
+        }
+
+        .dedication span {
+            display: block;
+        }
+
+        /* Constant Display */
+        .constant-k {
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+            color: #777;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Coulomb's Law Simulation</h1>
+
+        <!-- Formula Display -->
+        <div class="formula">
+            Fe = k &times; |q<sub>1</sub> &times; q<sub>2</sub>| / r<sup>2</sup>
+        </div>
+
+        <!-- Visualization area -->
+        <div class="simulation">
+            <div id="charge1" class="charge"></div>
+            <div id="charge2" class="charge"></div>
+        </div>
+
+        <!-- Input fields for adjusting charges and distance -->
+        <div class="input-fields">
+            <div class="charge-box">
+                <label for="q1">Charge 1 (μC)</label>
+                <div class="slider-container">
+                    <input type="range" id="q1" min="0" max="10000" step="10" value="100" oninput="updateSimulation()">
+                    <span id="q1-value">100</span> μC
+                </div>
+                <div class="radio-group">
+                    <input type="radio" id="q1-positive" name="q1-type" value="positive" checked onchange="updateSimulation()">
+                    <label for="q1-positive">+</label>
+                    <input type="radio" id="q1-negative" name="q1-type" value="negative" onchange="updateSimulation()">
+                    <label for="q1-negative">-</label>
+                </div>
+            </div>
+
+            <div class="charge-box">
+                <label for="q2">Charge 2 (μC)</label>
+                <div class="slider-container">
+                    <input type="range" id="q2" min="0" max="10000" step="10" value="100" oninput="updateSimulation()">
+                    <span id="q2-value">100</span> μC
+                </div>
+                <div class="radio-group">
+                    <input type="radio" id="q2-positive" name="q2-type" value="positive" checked onchange="updateSimulation()">
+                    <label for="q2-positive">+</label>
+                    <input type="radio" id="q2-negative" name="q2-type" value="negative" onchange="updateSimulation()">
+                    <label for="q2-negative">-</label>
+                </div>
+            </div>
+
+            <div class="charge-box">
+                <label for="r">Distance r (cm)</label>
+                <input type="range" id="r" min="1" max="400" step="1" value="10" oninput="updateSimulation()">
+                <span id="r-value">10</span> cm
+            </div>
+        </div>
+
+        <button onclick="calculateForce()">Calculate Force</button>
+
+        <h2 id="result"></h2>
+
+        <!-- Dedication Section -->
+        <div class="dedication">
+            <span>Student: Mohamad Yaman</span>
+            <span>Eminent Teacher: Mr. Yousef Bakra</span>
+        </div>
+
+        <!-- Constant k Display -->
+        <div class="constant-k">
+            k = 9 × 10<sup>9</sup> N·m<sup>2</sup>/C<sup>2</sup>
+        </div>
+
+    </div>
+
+    <script>
+        const k = 9 * Math.pow(10, 9); // in N·m²/C²
+
+        // Function to calculate the force based on q1, q2, and r
+        function calculateForce() {
+            const q1 = parseFloat(document.getElementById('q1').value) * Math.pow(10, -6); // Convert μC to C
+            const q2 = parseFloat(document.getElementById('q2').value) * Math.pow(10, -6); // Convert μC to C
+            const r = parseFloat(document.getElementById('r').value) / 100; // Convert cm to meters
+
+            if (r <= 0) {
+                document.getElementById('result').textContent = "Distance must be greater than 0.";
+                return;
+            }
+
+            const force = (k * Math.abs(q1 * q2)) / Math.pow(r, 2);
+            document.getElementById('result').textContent = `Electrostatic Force (Fe): ${force.toFixed(2)} N`;
+        }
+
+        // Function to update the simulation visuals based on the inputs
+        function updateSimulation() {
+            const q1 = parseFloat(document.getElementById('q1').value);
+            const q2 = parseFloat(document.getElementById('q2').value);
+            const r = parseFloat(document.getElementById('r').value);
+
+            document.getElementById('q1-value').textContent = q1;
+            document.getElementById('q2-value').textContent = q2;
+            document.getElementById('r-value').textContent = r;
+
+            const charge1 = document.getElementById('charge1');
+            const charge2 = document.getElementById('charge2');
+
+            // Adjust charge sizes
+            charge1.style.width = `${Math.abs(q1) / 100}px`;
+            charge1.style.height = `${Math.abs(q1) / 100}px`;
+
+            charge2.style.width = `${Math.abs(q2) / 100}px`;
+            charge2.style.height = `${Math.abs(q2) / 100}px`;
+
+            // Adjust charge colors and content based on type
+            const q1Type = document.querySelector('input[name="q1-type"]:checked').value;
+            const q2Type = document.querySelector('input[name="q2-type"]:checked').value;
+
+            charge1.textContent = q1Type === "positive" ? "+" : "-";
+            charge1.style.backgroundColor = q1Type === "positive" ? "red" : "blue";
+
+            charge2.textContent = q2Type === "positive" ? "+" : "-";
+            charge2.style.backgroundColor = q2Type === "positive" ? "red" : "blue";
+
+            // Adjust the distance between charges
+            charge1.style.left = `calc(50% - ${r * 2}px)`;
+            charge2.style.left = `calc(50% + ${r * 2}px)`;
+        }
+
+        // Initialize simulation with default values
+        updateSimulation();
+    </script>
+</body>
+</html>
